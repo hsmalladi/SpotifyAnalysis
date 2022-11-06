@@ -1,0 +1,152 @@
+---
+---
+---
+
+```{r set-up, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r load-pkg-data}
+#| message: false
+
+# load packages and data
+library(tidyverse)
+library(tidymodels)
+library(knitr)
+install.packages("corrplot")
+library(corrplot)
+
+spotify_data <- read_csv("data.csv")
+```
+
+1.  **What makes a happy song popular from 2010s-2020?**
+
+    What are some of the factors?
+
+    ```{r filter-happy-songs}
+    filteredhappy <- spotify_data %>%
+      filter(year >= 2010) %>%
+      filter(mode != 0)
+    ```
+
+    Total of all songs = 120,390 happy songs (major key)
+
+    Percentage of happy songs = 70.86% ( $120390/169909 = 0.7085558$ )
+
+    ```{r happy-graphs}
+    ggplot(data = filteredhappy, mapping = aes(x = danceability, y = popularity)) +
+      geom_point()+ 
+      geom_smooth(aes(x = danceability, y = popularity), method = "lm") +
+      labs(
+        title = "Distribution of Danceability vs. Popularity",
+        x = "Danceability",
+        y = "Popularity") +
+      theme_minimal()
+
+    ggplot(data = filteredhappy, mapping = aes(x = duration_ms, y = popularity)) +
+      geom_point()+ 
+      geom_smooth(aes(x = duration_ms, y = popularity), method = "lm") +
+      labs(
+        title = "Distribution of Duration vs. Popularity",
+        x = "Duration (in ms)",
+        y = "Popularity") +
+      theme_minimal()
+
+    ggplot(data = filteredhappy, mapping = aes(x = energy, y = popularity)) +
+      geom_point()+ 
+      geom_smooth(aes(x = energy, y = popularity), method = "lm") +
+      labs(
+        title = "Distribution of Energy vs. Popularity",
+        x = "Energy",
+        y = "Popularity") +
+      theme_minimal()
+
+    ggplot(data = filteredhappy, mapping = aes(x = tempo, y = popularity)) +
+      geom_point()+ 
+      geom_smooth(aes(x = tempo, y = popularity), method = "lm") +
+      labs(
+        title = "Distribution of Tempo vs. Popularity",
+        x = "Tempo",
+        y = "Popularity") +
+      theme_minimal()
+
+    newhappy_data <- filteredhappy %>%
+      mutate(
+        explicit_level = ifelse(explicit == 0, "No Explicit Content", "Explicit Content")
+      )
+
+    ggplot(data = newhappy_data, mapping = aes(x = explicit_level, y = popularity)) +
+      geom_boxplot(fill = "steelblue") + 
+      labs(
+        title = "Distribution of Explicit Content vs. Popularity",
+        x = "",
+        y = "Popularity") +
+      theme_minimal()
+    ```
+
+2.  **What makes a sad song popular?**
+
+    What are some of the factors?
+
+    ```{r filter-song-songs}
+    filteredsad <- spotify_data %>%
+      filter(year >= 2010) %>%
+      filter(mode != 1)
+    ```
+
+Total of all songs = 49,519 sad songs (minor key)
+
+Percentage of happy songs = 29.14% ( $49519/169909 = 0.2914442$ )
+
+```{r sad-graphs}
+ggplot(data = filteredsad, mapping = aes(x = acousticness, y = popularity)) +
+  geom_point()+ 
+  geom_smooth(aes(x = acousticness, y = popularity), method = "lm") +
+  labs(
+    title = "Distribution of Acousticness vs. Popularity",
+    x = "Acousticness",
+    y = "Popularity") +
+  theme_minimal()
+
+ggplot(data = filteredsad, mapping = aes(x = duration_ms, y = popularity)) +
+  geom_point()+ 
+  geom_smooth(aes(x = duration_ms, y = popularity), method = "lm") +
+  labs(
+    title = "Distribution of Duration vs. Popularity",
+    x = "Duration (in ms)",
+    y = "Popularity") +
+  theme_minimal()
+
+ggplot(data = filteredsad, mapping = aes(x = speechiness, y = popularity)) +
+  geom_point()+ 
+  geom_smooth(aes(x = speechiness, y = popularity), method = "lm") +
+  labs(
+    title = "Distribution of Speechiness vs. Popularity",
+    x = "Speechiness",
+    y = "Popularity") +
+  theme_minimal()
+
+ggplot(data = filteredsad, mapping = aes(x = tempo, y = popularity)) +
+  geom_point()+ 
+  geom_smooth(aes(x = tempo, y = popularity), method = "lm") +
+  labs(
+    title = "Distribution of Tempo vs. Popularity",
+    x = "Tempo",
+    y = "Popularity") +
+  theme_minimal()
+
+newsad_data <- filteredsad %>%
+  mutate(
+    explicit_level = ifelse(explicit == 0, "No Explicit Content", "Explicit Content")
+  )
+
+ggplot(data = newsad_data, mapping = aes(x = explicit_level, y = popularity)) +
+  geom_boxplot(fill = "steelblue") + 
+  labs(
+    title = "Distribution of Explicit Content vs. Popularity",
+    x = "",
+    y = "Popularity") +
+  theme_minimal()
+```
